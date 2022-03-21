@@ -85,11 +85,28 @@ func touch_input():
 		final_touch = get_global_mouse_position()
 		var final_position = pixel_to_grid(final_touch.x, final_touch.y)
 		if is_in_grid(final_position.x, final_position.y) && controlling:
-			print("Swiped")
+			touch_difference(pixel_to_grid(first_touch.x, first_touch.y), final_position)
 
-func swap_pieces(piece, direction):
-	
-	pass
+func swap_pieces(column, row, direction):
+	var first_piece = all_pieces[column][row]
+	var other_piece = all_pieces[column + direction.x][row + direction.y]
+	all_pieces[column][row] = other_piece
+	all_pieces[column + direction.x][row + direction.y] = first_piece
+	first_piece.position = grid_to_pixel(column + direction.x, row + direction.y)
+	other_piece.position = grid_to_pixel(column, row)
+
+func touch_difference(grid_1, grid_2):
+	var difference = grid_2 - grid_1
+	if abs(difference.x) > abs(difference.y):
+		if difference.x > 0:
+			swap_pieces(grid_1.x, grid_1.y, Vector2(1, 0))
+		elif difference.x < 0:
+			swap_pieces(grid_1.x, grid_1.y, Vector2(-1, 0))
+	elif abs(difference.y) > abs(difference.x):
+		if difference.y > 0:
+			swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
+		elif difference.y < 0:
+			swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
 
 func is_in_grid(column, row):
 	if column >= 0 && column < width:
